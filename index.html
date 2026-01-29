@@ -9,6 +9,7 @@
       --bg:#070a11;--panel:#0d1220;--panel2:#0b1020;--text:#e8ecf5;--muted:#9aa6bd;--border:#1b2640;
       --yes:#22c55e;--no:#ef4444;--wait:#fbbf24;--link:#7dd3fc;--shadow: rgba(0,0,0,.45);
       --ring: rgba(125, 211, 252, .35);
+      --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -27,24 +28,32 @@
     header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid rgba(27,38,64,.7)}
     .brand{display:flex;align-items:center;gap:10px;font-weight:700}
     .dot{width:10px;height:10px;border-radius:50%;background:#7dd3fc;box-shadow:0 0 12px rgba(125,211,252,.6)}
-    .nav a{color:var(--link);text-decoration:none;font-size:.85rem;margin-left:12px}
-    .nav a:hover{text-decoration:underline}
-    .view{display:none}
+    .nav a{color:var(--link);text-decoration:none;font-size:.85rem;margin-left:12px;transition:opacity .2s}
+    .nav a:hover{text-decoration:underline;opacity:0.8}
+    .view{display:none; animation: fadeIn .4s var(--ease)}
     .view.active{display:block}
 
+    @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes pulse { 0% { transform:scale(1); } 50% { transform:scale(1.02); } 100% { transform:scale(1); } }
+
     /* Invitee */
-    .invitee{padding:22px}
+    .invitee{padding:28px 22px 32px}
     h1{margin:0;font-size:1.6rem;letter-spacing:-.25px}
     .subtitle{color:var(--muted);margin-top:8px;line-height:1.45}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-    button{appearance:none;border:0;border-radius:14px;padding:14px;font-weight:700;font-size:1rem;cursor:pointer}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+    button{appearance:none;border:0;border-radius:14px;padding:16px;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .1s, filter .2s}
+    button:hover{filter:brightness(1.1)}
+    button:active{transform:scale(0.98)}
     button:focus{outline:none; box-shadow:0 0 0 4px var(--ring)}
     .yes{background:linear-gradient(180deg,#25d366,#16a34a);color:#062d16}
     .no{background:linear-gradient(180deg,#ff5a5a,#dc2626);color:#3b0a0a}
-    .status{margin-top:12px;color:var(--muted);min-height:1.2em}
+    
+    .status{margin-top:16px;color:var(--muted);min-height:1.4em;font-weight:500;display:flex;align-items:center;gap:6px}
+    .status.saved{color:var(--yes); animation: pulse .3s var(--ease)}
 
-    .name{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .name input{flex:1;min-width:220px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1020;color:var(--text)}
+    .name{margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .name input{flex:1;min-width:220px;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#0b1020;color:var(--text);font-size:1rem;transition:border-color .2s}
+    .name input:focus{border-color:var(--link);outline:none}
     .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;background:rgba(15,25,50,.7);border:1px solid rgba(27,38,64,.7);color:var(--muted);font-size:.82rem}
     .chip b{color:var(--text)}
 
@@ -52,29 +61,35 @@
     .org{padding:0}
     .event-top{padding:20px 22px;border-bottom:1px solid rgba(27,38,64,.7);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
     .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px 22px}
-    .stat{border:1px solid var(--border);border-radius:14px;padding:14px;background:rgba(15,25,50,.5)}
-    .stat b{font-size:1.4rem}
-    table{width:100%;border-collapse:collapse}
+    .stat{border:1px solid var(--border);border-radius:14px;padding:14px;background:rgba(15,25,50,.5);text-align:center}
+    .stat b{font-size:1.6rem;display:block;margin-bottom:4px}
+    .stat span{font-size:.85rem;color:var(--muted)}
+    
+table{width:100%;border-collapse:collapse}
     th,td{padding:12px 22px;font-size:.9rem;border-top:1px solid rgba(27,38,64,.6)}
-    th{color:var(--muted);text-align:left;font-weight:600}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-size:.8rem}
+    th{color:var(--muted);text-align:left;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:0.5px}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.8rem;font-weight:500}
     .pill.y{background:rgba(34,197,94,.15);color:var(--yes)}
     .pill.n{background:rgba(239,68,68,.15);color:var(--no)}
     .pill.w{background:rgba(251,191,36,.15);color:var(--wait)}
 
-    .panel{padding:16px 22px;border-top:1px solid rgba(27,38,64,.6);display:grid;grid-template-columns: 1fr 1fr;gap:14px}
+    .panel{padding:24px 22px;border-top:1px solid rgba(27,38,64,.6);display:grid;grid-template-columns: 1fr 1fr;gap:24px;background:rgba(13, 18, 32, 0.4)}
     .panel h2{margin:0 0 8px;font-size:1rem}
-    .panel .hint{color:var(--muted);font-size:.85rem;line-height:1.45}
+    .panel .hint{color:var(--muted);font-size:.85rem;line-height:1.5}
 
-    textarea{width:100%;min-height:86px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0b1020;color:var(--text);resize:vertical}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
-    .btnSmall{border:1px solid var(--border);background:rgba(15,25,50,.7);color:var(--text);padding:8px 12px;border-radius:12px;font-size:.85rem;cursor:pointer}
-    .btnSmall:hover{filter:brightness(1.06)}
+    textarea{width:100%;min-height:86px;padding:12px;border-radius:12px;border:1px solid var(--border);background:#0b1020;color:var(--text);resize:vertical;font-family:inherit;line-height:1.4}
+    textarea:focus{border-color:var(--link);outline:none}
+    
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+    .btnSmall{border:1px solid var(--border);background:rgba(15,25,50,.7);color:var(--text);padding:8px 14px;border-radius:10px;font-size:.85rem;cursor:pointer;transition:background .2s}
+    .btnSmall:hover{background:rgba(27,38,64,.8)}
 
-    .linksBox{border:1px solid rgba(27,38,64,.7);background:rgba(15,25,50,.35);border-radius:12px;padding:10px 12px}
-    .linksBox code{display:block;color:var(--text);font-size:.85rem;word-break:break-all;line-height:1.4}
+    .linksBox{border:1px solid rgba(27,38,64,.7);background:rgba(15,25,50,.35);border-radius:12px;padding:12px}
+    .linksBox code{display:block;color:var(--text);font-size:.85rem;word-break:break-all;line-height:1.4;font-family:ui-monospace, monospace}
+    
+    .empty-state{padding:32px;text-align:center;color:var(--muted);font-style:italic}
 
-    .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(17,24,39,.92);border:1px solid rgba(27,38,64,.75);color:var(--text);padding:10px 12px;border-radius:12px;box-shadow:0 14px 30px rgba(0,0,0,.35);display:none;max-width:min(920px,calc(100% - 24px));font-size:.9rem}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(17,24,39,.95);border:1px solid rgba(27,38,64,.8);color:var(--text);padding:10px 16px;border-radius:99px;box-shadow:0 14px 40px rgba(0,0,0,.4);display:none;font-size:.9rem;z-index:99}
 
     @media(max-width:900px){.panel{grid-template-columns:1fr}}
     @media(max-width:640px){.actions{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
@@ -97,7 +112,7 @@
         <div class="subtitle" id="subtitle"></div>
 
         <div class="name">
-          <input id="nameInput" placeholder="Your name (shown to organiser)" />
+          <input id="nameInput" placeholder="Your name (shown to organiser)" autocomplete="off" />
           <span class="chip" id="inviteChip" style="display:none">Invite: <b id="inviteName">—</b></span>
         </div>
 
@@ -106,7 +121,7 @@
           <button class="no" id="btnNo">I am not coming</button>
         </div>
         <div class="status" id="status"></div>
-        <div class="subtitle" style="margin-top:14px;font-size:.88rem">
+        <div class="subtitle" style="margin-top:24px;font-size:.88rem;opacity:0.7">
           Tip: try named invite links like <b>?invite=anna</b> — e.g. <span id="exampleLink"></span>
         </div>
       </section>
@@ -137,7 +152,7 @@
             <textarea id="inviteesInput" placeholder="Anna&#10;Ben&#10;Chris"></textarea>
             <div class="row">
               <button class="btnSmall" id="saveInvitees">Save invitees</button>
-              <button class="btnSmall" id="resetAll">Reset (local)</button>
+              <button class="btnSmall" id="resetAll">Reset responses</button>
               <span class="hint" id="savedMsg" style="margin-left:auto"></span>
             </div>
           </div>
@@ -152,7 +167,7 @@
               </div>
             </div>
 
-            <div class="linksBox" style="margin-top:10px">
+            <div class="linksBox" style="margin-top:16px">
               <code id="namedLink">—</code>
               <div class="row" style="margin-top:8px">
                 <button class="btnSmall" id="copyNamed">Copy named link</button>
@@ -171,36 +186,55 @@
   // areyoucoming.to – demo with subscription list + named invite links (no backend)
   // Event = first path segment. Week = Monday-start key.
   // Store:
-  //  - Invite list:   ayc.invites.{event}.{week} = ["Anna", ...]
-  //  - Responses:     ayc.responses.{event}.{week} = [{inviteKey, displayName, answer, ts}]
+  //  - Invite list:   ayc.invites.{eventSlug} = ["Anna", ...]
+  //  - Responses:     ayc.responses.{eventSlug}.{weekKey} = [{inviteKey, displayName, answer, ts}]
   // Sync across tabs with BroadcastChannel if available.
 
   const TZ = 'Europe/London';
-  const eventSlug = (location.pathname.split('/').filter(Boolean)[0] || 'demo').toLowerCase();
+
+  // Determine event slug:
+  // 1. Check "?path=/slug" (GitHub Pages workaround)
+  // 2. Fallback to first path segment of URL
+  // 3. Default to "demo"
+  const getEventSlug = () => {
+    const params = new URLSearchParams(location.search);
+    const pathParam = params.get('path');
+    if (pathParam) {
+      return pathParam.split('/').filter(Boolean)[0] || 'demo';
+    }
+    return location.pathname.split('/').filter(Boolean)[0] || 'demo';
+  };
+  const eventSlug = getEventSlug().toLowerCase();
+
   const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('ayc.sync') : null;
 
   function toast(msg){
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.style.display = 'block';
+    t.style.animation = 'fadeIn 0.3s ease';
     clearTimeout(toast._t);
     toast._t = setTimeout(() => t.style.display='none', 2000);
   }
 
-  function mondayKey(){
+  function getMondayDate(){
     const d = new Date();
     const day = (d.getDay() + 6) % 7; // Monday=0
     d.setDate(d.getDate() - day);
     d.setHours(0,0,0,0);
-    return d.toISOString().slice(0,10);
+    return d;
   }
 
-  const weekKey = mondayKey();
-  const invitesKey = `ayc.invites.${eventSlug}.${weekKey}`;
+  const mondayDate = getMondayDate();
+  const weekKey = mondayDate.toISOString().slice(0,10);
+  
+  // Invites persist across weeks for the event
+  const invitesKey = `ayc.invites.${eventSlug}`;
+  // Responses are scoped to the specific week
   const responsesKey = `ayc.responses.${eventSlug}.${weekKey}`;
 
   const loadJSON = (k, fallback) => {
-    try { return JSON.parse(localStorage.getItem(k) || JSON.stringify(fallback)); }
+    try { return JSON.parse(localStorage.getItem(k) || JSON.stringify(fallback)); } 
     catch { return fallback; }
   };
   const saveJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -219,13 +253,21 @@
 
   function parseInvitees(text){
     return (text || '')
-      .split(/[,\n]/g)
+      .split(/[\,\n]/g)
       .map(normaliseName)
       .filter(Boolean);
   }
 
   function formatWhen(ts){
-    return new Date(ts).toLocaleString('en-GB', { timeZone: TZ });
+    // Short format: "Mon 14:00"
+    const d = new Date(ts);
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    return d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', hour12:false });
+  }
+
+  function formatMonday(d){
+    return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'short' });
   }
 
   function upsertResponse(inviteKey, displayName, answer){
@@ -275,7 +317,7 @@
 
     if(invites.length === 0){
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="3" style="color:var(--muted)">No invitees yet. Add names below to create the subscription list.</td>`;
+      tr.innerHTML = `<td colspan="3"><div class="empty-state">No invitees yet.<br>Add names below to track responses.</div></td>`;
       tb.appendChild(tr);
       return;
     }
@@ -285,9 +327,9 @@
       const r = map.get(ik);
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${name}</td>
+        <td><b>${name}</b></td>
         <td>${pill(r && r.answer)}</td>
-        <td>${r ? formatWhen(r.ts) : '—'}</td>
+        <td style="color:var(--muted)">${r ? formatWhen(r.ts) : '—'}</td>
       `;
       tb.appendChild(tr);
     }
@@ -356,22 +398,29 @@
     saveJSON(invitesKey, invites);
   }
 
-  function renderInviteeStatus(){
+  function renderInviteeStatus(justSaved = false){
     const inviteKey = currentInviteKey();
     const status = document.getElementById('status');
+    status.className = 'status';
 
     if(!inviteKey){ status.textContent=''; return; }
     const map = getResponseMap();
     const r = map.get(inviteKey);
     if(!r){ status.textContent=''; return; }
 
-    status.textContent = (r.answer === 'yes') ? "Saved: coming." : "Saved: not coming.";
+    status.innerHTML = (r.answer === 'yes') 
+      ? `<span>✓</span> You are coming.` 
+      : `<span>×</span> You are not coming.`;
+    
+    if(justSaved) status.classList.add('saved');
   }
 
   // Init text
   const pretty = titleCaseKey(eventSlug);
-  document.getElementById('subtitle').textContent = `${pretty} · one tap RSVP`;
-  document.getElementById('orgTitle').textContent = `${pretty} · This Week`;
+  const prettyDate = formatMonday(mondayDate);
+  document.getElementById('question').textContent = `Are you coming this week?`;
+  document.getElementById('subtitle').textContent = `${prettyDate}`;
+  document.getElementById('orgTitle').textContent = `${pretty} · ${prettyDate}`;
   document.getElementById('orgMeta').textContent = `/${eventSlug} · week ${weekKey}`;
 
   // Prefill invitees input
@@ -387,34 +436,25 @@
   // Invitee actions
   const nameInput = document.getElementById('nameInput');
 
-  document.getElementById('btnYes').onclick = () => {
+  function handleResponse(answer) {
     const name = normaliseName(nameInput.value);
-    if(!name) return alert('Please enter your name');
-
-    const ik = currentInviteKey();
-    if(!ik) return alert('Please enter your name');
-
-    // If they came via general link, auto-add them to invite list for demo.
-    ensureInInviteList(name);
-
-    upsertResponse(ik, name, 'yes');
-    document.getElementById('status').textContent = 'Saved: coming.';
-    renderOrg();
-  };
-
-  document.getElementById('btnNo').onclick = () => {
-    const name = normaliseName(nameInput.value);
-    if(!name) return alert('Please enter your name');
+    if(!name) {
+      nameInput.focus();
+      return alert('Please enter your name');
+    }
 
     const ik = currentInviteKey();
     if(!ik) return alert('Please enter your name');
 
     ensureInInviteList(name);
-
-    upsertResponse(ik, name, 'no');
-    document.getElementById('status').textContent = 'Saved: not coming.';
+    upsertResponse(ik, name, answer);
+    
+    renderInviteeStatus(true); // pass true to trigger animation
     renderOrg();
-  };
+  }
+
+  document.getElementById('btnYes').onclick = () => handleResponse('yes');
+  document.getElementById('btnNo').onclick = () => handleResponse('no');
 
   // Organiser actions
   document.getElementById('saveInvitees').onclick = () => {
@@ -422,8 +462,10 @@
     const names = parseInvitees(raw);
     saveJSON(invitesKey, names);
 
-    document.getElementById('savedMsg').textContent = names.length ? `Saved ${names.length} invitee(s).` : 'Saved.';
-    setTimeout(() => document.getElementById('savedMsg').textContent = '', 1800);
+    const msg = document.getElementById('savedMsg');
+    msg.textContent = names.length ? `Saved.` : 'Saved.';
+    msg.style.opacity = '1';
+    setTimeout(() => msg.style.opacity = '0', 2000);
 
     if(bc) bc.postMessage({ type:'changed', eventSlug, weekKey });
     setLinks();
@@ -432,15 +474,13 @@
   };
 
   document.getElementById('resetAll').onclick = () => {
-    if(!confirm('Reset invitees + responses for this event/week (local demo)?')) return;
-    localStorage.removeItem(invitesKey);
+    if(!confirm('Reset responses for this week? (Invites will be kept)')) return;
     localStorage.removeItem(responsesKey);
-    document.getElementById('inviteesInput').value = '';
     syncInviteeFromUrl();
     setLinks();
     renderOrg();
     document.getElementById('status').textContent = '';
-    toast('Reset done (local).');
+    toast('Responses cleared.');
     if(bc) bc.postMessage({ type:'changed', eventSlug, weekKey });
   };
 
@@ -453,7 +493,7 @@
   };
 
   async function copyText(text){
-    try{ await navigator.clipboard.writeText(text); toast('Copied.'); }
+    try{ await navigator.clipboard.writeText(text); toast('Copied.'); } 
     catch{ prompt('Copy this link:', text); }
   }
 
