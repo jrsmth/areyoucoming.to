@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>areyoucoming.to</title>
+  <style>
+    :root{
+      --bg:#070a11;--panel:#0d1220;--panel2:#0b1020;--text:#e8ecf5;--muted:#9aa6bd;--border:#1b2640;
+      --yes:#22c55e;--no:#ef4444;--wait:#fbbf24;--link:#7dd3fc;--shadow: rgba(0,0,0,.45);
+      --ring: rgba(125, 211, 252, .35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(900px 500px at 50% -180px, #162349 0%, rgba(7,10,17,0) 70%),
+        radial-gradient(700px 400px at 12% 30%, rgba(34,197,94,.10) 0%, rgba(7,10,17,0) 55%),
+        radial-gradient(700px 400px at 88% 65%, rgba(239,68,68,.08) 0%, rgba(7,10,17,0) 55%),
+        var(--bg);
+      color:var(--text); padding:18px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .wrap{width:min(980px,100%)}
+    .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:18px;box-shadow:0 24px 70px var(--shadow);overflow:hidden}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid rgba(27,38,64,.7)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .dot{width:10px;height:10px;border-radius:50%;background:#7dd3fc;box-shadow:0 0 12px rgba(125,211,252,.6)}
+    .nav a{color:var(--link);text-decoration:none;font-size:.85rem;margin-left:12px}
+    .nav a:hover{text-decoration:underline}
+    .view{display:none}
+    .view.active{display:block}
+
+    /* Invitee */
+    .invitee{padding:22px}
+    h1{margin:0;font-size:1.6rem;letter-spacing:-.25px}
+    .subtitle{color:var(--muted);margin-top:8px;line-height:1.45}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+    button{appearance:none;border:0;border-radius:14px;padding:14px;font-weight:700;font-size:1rem;cursor:pointer}
+    button:focus{outline:none; box-shadow:0 0 0 4px var(--ring)}
+    .yes{background:linear-gradient(180deg,#25d366,#16a34a);color:#062d16}
+    .no{background:linear-gradient(180deg,#ff5a5a,#dc2626);color:#3b0a0a}
+    .status{margin-top:12px;color:var(--muted);min-height:1.2em}
+
+    .name{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .name input{flex:1;min-width:220px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1020;color:var(--text)}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;background:rgba(15,25,50,.7);border:1px solid rgba(27,38,64,.7);color:var(--muted);font-size:.82rem}
+    .chip b{color:var(--text)}
+
+    /* Organiser */
+    .org{padding:0}
+    .event-top{padding:20px 22px;border-bottom:1px solid rgba(27,38,64,.7);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px 22px}
+    .stat{border:1px solid var(--border);border-radius:14px;padding:14px;background:rgba(15,25,50,.5)}
+    .stat b{font-size:1.4rem}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px 22px;font-size:.9rem;border-top:1px solid rgba(27,38,64,.6)}
+    th{color:var(--muted);text-align:left;font-weight:600}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-size:.8rem}
+    .pill.y{background:rgba(34,197,94,.15);color:var(--yes)}
+    .pill.n{background:rgba(239,68,68,.15);color:var(--no)}
+    .pill.w{background:rgba(251,191,36,.15);color:var(--wait)}
+
+    .panel{padding:16px 22px;border-top:1px solid rgba(27,38,64,.6);display:grid;grid-template-columns: 1fr 1fr;gap:14px}
+    .panel h2{margin:0 0 8px;font-size:1rem}
+    .panel .hint{color:var(--muted);font-size:.85rem;line-height:1.45}
+
+    textarea{width:100%;min-height:86px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0b1020;color:var(--text);resize:vertical}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+    .btnSmall{border:1px solid var(--border);background:rgba(15,25,50,.7);color:var(--text);padding:8px 12px;border-radius:12px;font-size:.85rem;cursor:pointer}
+    .btnSmall:hover{filter:brightness(1.06)}
+
+    .linksBox{border:1px solid rgba(27,38,64,.7);background:rgba(15,25,50,.35);border-radius:12px;padding:10px 12px}
+    .linksBox code{display:block;color:var(--text);font-size:.85rem;word-break:break-all;line-height:1.4}
+
+    .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(17,24,39,.92);border:1px solid rgba(27,38,64,.75);color:var(--text);padding:10px 12px;border-radius:12px;box-shadow:0 14px 30px rgba(0,0,0,.35);display:none;max-width:min(920px,calc(100% - 24px));font-size:.9rem}
+
+    @media(max-width:900px){.panel{grid-template-columns:1fr}}
+    @media(max-width:640px){.actions{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <div class="brand"><span class="dot"></span><span id="brand">areyoucoming.to</span></div>
+        <div class="nav">
+          <a href="#" id="navInvitee">Invitee</a>
+          <a href="#" id="navOrg">Organiser</a>
+        </div>
+      </header>
+
+      <!-- INVITEE VIEW -->
+      <section class="view invitee active" id="inviteeView">
+        <h1 id="question">Are you coming this week?</h1>
+        <div class="subtitle" id="subtitle"></div>
+
+        <div class="name">
+          <input id="nameInput" placeholder="Your name (shown to organiser)" />
+          <span class="chip" id="inviteChip" style="display:none">Invite: <b id="inviteName">—</b></span>
+        </div>
+
+        <div class="actions">
+          <button class="yes" id="btnYes">I am coming</button>
+          <button class="no" id="btnNo">I am not coming</button>
+        </div>
+        <div class="status" id="status"></div>
+        <div class="subtitle" style="margin-top:14px;font-size:.88rem">
+          Tip: try named invite links like <b>?invite=anna</b> — e.g. <span id="exampleLink"></span>
+        </div>
+      </section>
+
+      <!-- ORGANISER VIEW -->
+      <section class="view org" id="orgView">
+        <div class="event-top">
+          <div>
+            <h1 id="orgTitle">Event · This Week</h1>
+            <div class="subtitle">Live responses</div>
+          </div>
+          <div class="subtitle" id="orgMeta"></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="cYes">0</b><br><span>Coming</span></div>
+          <div class="stat"><b id="cNo">0</b><br><span>Not coming</span></div>
+          <div class="stat"><b id="cWait">0</b><br><span>No response</span></div>
+        </div>
+        <table>
+          <thead><tr><th>Invitee</th><th>Status</th><th>Updated</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+
+        <div class="panel">
+          <div>
+            <h2>Invitees</h2>
+            <div class="hint">Enter names (comma or newline separated). This creates a subscription list so “No response” becomes meaningful.</div>
+            <textarea id="inviteesInput" placeholder="Anna&#10;Ben&#10;Chris"></textarea>
+            <div class="row">
+              <button class="btnSmall" id="saveInvitees">Save invitees</button>
+              <button class="btnSmall" id="resetAll">Reset (local)</button>
+              <span class="hint" id="savedMsg" style="margin-left:auto"></span>
+            </div>
+          </div>
+
+          <div>
+            <h2>Links</h2>
+            <div class="hint">Share the general invite link, or a named invite link that pre-fills identity.</div>
+            <div class="linksBox" style="margin-top:10px">
+              <code id="generalLink">—</code>
+              <div class="row" style="margin-top:8px">
+                <button class="btnSmall" id="copyGeneral">Copy general link</button>
+              </div>
+            </div>
+
+            <div class="linksBox" style="margin-top:10px">
+              <code id="namedLink">—</code>
+              <div class="row" style="margin-top:8px">
+                <button class="btnSmall" id="copyNamed">Copy named link</button>
+                <span class="hint">Uses first invitee in list.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  // areyoucoming.to – demo with subscription list + named invite links (no backend)
+  // Event = first path segment. Week = Monday-start key.
+  // Store:
+  //  - Invite list:   ayc.invites.{event}.{week} = ["Anna", ...]
+  //  - Responses:     ayc.responses.{event}.{week} = [{inviteKey, displayName, answer, ts}]
+  // Sync across tabs with BroadcastChannel if available.
+
+  const TZ = 'Europe/London';
+  const eventSlug = (location.pathname.split('/').filter(Boolean)[0] || 'demo').toLowerCase();
+  const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('ayc.sync') : null;
+
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => t.style.display='none', 2000);
+  }
+
+  function mondayKey(){
+    const d = new Date();
+    const day = (d.getDay() + 6) % 7; // Monday=0
+    d.setDate(d.getDate() - day);
+    d.setHours(0,0,0,0);
+    return d.toISOString().slice(0,10);
+  }
+
+  const weekKey = mondayKey();
+  const invitesKey = `ayc.invites.${eventSlug}.${weekKey}`;
+  const responsesKey = `ayc.responses.${eventSlug}.${weekKey}`;
+
+  const loadJSON = (k, fallback) => {
+    try { return JSON.parse(localStorage.getItem(k) || JSON.stringify(fallback)); }
+    catch { return fallback; }
+  };
+  const saveJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+  function normaliseName(s){
+    return (s || '').trim().replace(/\s+/g,' ');
+  }
+
+  function inviteKeyFromName(name){
+    return normaliseName(name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  }
+
+  function titleCaseKey(key){
+    return (key || '').replace(/[-_]+/g,' ').replace(/\b\w/g, m => m.toUpperCase());
+  }
+
+  function parseInvitees(text){
+    return (text || '')
+      .split(/[,\n]/g)
+      .map(normaliseName)
+      .filter(Boolean);
+  }
+
+  function formatWhen(ts){
+    return new Date(ts).toLocaleString('en-GB', { timeZone: TZ });
+  }
+
+  function upsertResponse(inviteKey, displayName, answer){
+    const rows = loadJSON(responsesKey, []);
+    const now = Date.now();
+    const i = rows.findIndex(r => r.inviteKey === inviteKey);
+    const payload = { inviteKey, displayName, answer, ts: now };
+    if(i > -1) rows[i] = payload;
+    else rows.push(payload);
+    saveJSON(responsesKey, rows);
+    if(bc) bc.postMessage({ type:'changed', eventSlug, weekKey });
+    return rows;
+  }
+
+  function getResponseMap(){
+    const rows = loadJSON(responsesKey, []);
+    const m = new Map();
+    for(const r of rows) m.set(r.inviteKey, r);
+    return m;
+  }
+
+  function pill(answer){
+    if(answer === 'yes') return '<span class="pill y">Coming</span>';
+    if(answer === 'no') return '<span class="pill n">Not coming</span>';
+    return '<span class="pill w">No response</span>';
+  }
+
+  function renderOrg(){
+    const invites = loadJSON(invitesKey, []);
+    const map = getResponseMap();
+
+    let yes=0, no=0, wait=0;
+    for(const name of invites){
+      const ik = inviteKeyFromName(name);
+      const r = map.get(ik);
+      if(!r) wait++;
+      else if(r.answer === 'yes') yes++;
+      else if(r.answer === 'no') no++;
+    }
+
+    document.getElementById('cYes').textContent = String(yes);
+    document.getElementById('cNo').textContent = String(no);
+    document.getElementById('cWait').textContent = String(wait);
+
+    const tb = document.getElementById('rows');
+    tb.innerHTML = '';
+
+    if(invites.length === 0){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="3" style="color:var(--muted)">No invitees yet. Add names below to create the subscription list.</td>`;
+      tb.appendChild(tr);
+      return;
+    }
+
+    for(const name of invites){
+      const ik = inviteKeyFromName(name);
+      const r = map.get(ik);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${name}</td>
+        <td>${pill(r && r.answer)}</td>
+        <td>${r ? formatWhen(r.ts) : '—'}</td>
+      `;
+      tb.appendChild(tr);
+    }
+  }
+
+  function setLinks(){
+    const base = new URL(location.href);
+    base.search = '';
+    base.hash = '';
+
+    const general = base.toString();
+    document.getElementById('generalLink').textContent = general;
+
+    const invites = loadJSON(invitesKey, []);
+    const first = invites[0] || 'Anna';
+    const named = new URL(general);
+    named.searchParams.set('invite', inviteKeyFromName(first));
+    document.getElementById('namedLink').textContent = named.toString();
+
+    const ex = new URL(general);
+    ex.searchParams.set('invite', 'anna');
+    const span = document.getElementById('exampleLink');
+    span.innerHTML = `<a href="${ex.toString()}">${ex.pathname}?invite=anna</a>`;
+  }
+
+  function syncInviteeFromUrl(){
+    const url = new URL(location.href);
+    const invite = url.searchParams.get('invite');
+    const input = document.getElementById('nameInput');
+    const chip = document.getElementById('inviteChip');
+    const chipName = document.getElementById('inviteName');
+
+    if(invite){
+      const invites = loadJSON(invitesKey, []);
+      const match = invites.find(n => inviteKeyFromName(n) === invite);
+      const display = match || titleCaseKey(invite);
+
+      input.value = display;
+      input.setAttribute('data-invitekey', invite);
+      input.disabled = true;
+
+      chip.style.display = 'inline-flex';
+      chipName.textContent = invite;
+    } else {
+      input.disabled = false;
+      input.removeAttribute('data-invitekey');
+      chip.style.display = 'none';
+    }
+  }
+
+  function currentInviteKey(){
+    const input = document.getElementById('nameInput');
+    const fromUrl = input.getAttribute('data-invitekey');
+    if(fromUrl) return fromUrl;
+
+    const name = normaliseName(input.value);
+    if(!name) return '';
+    return inviteKeyFromName(name);
+  }
+
+  function ensureInInviteList(name){
+    const invites = loadJSON(invitesKey, []);
+    const norm = normaliseName(name).toLowerCase();
+    if(invites.some(n => normaliseName(n).toLowerCase() === norm)) return;
+    invites.push(name);
+    saveJSON(invitesKey, invites);
+  }
+
+  function renderInviteeStatus(){
+    const inviteKey = currentInviteKey();
+    const status = document.getElementById('status');
+
+    if(!inviteKey){ status.textContent=''; return; }
+    const map = getResponseMap();
+    const r = map.get(inviteKey);
+    if(!r){ status.textContent=''; return; }
+
+    status.textContent = (r.answer === 'yes') ? "Saved: coming." : "Saved: not coming.";
+  }
+
+  // Init text
+  const pretty = titleCaseKey(eventSlug);
+  document.getElementById('subtitle').textContent = `${pretty} · one tap RSVP`;
+  document.getElementById('orgTitle').textContent = `${pretty} · This Week`;
+  document.getElementById('orgMeta').textContent = `/${eventSlug} · week ${weekKey}`;
+
+  // Prefill invitees input
+  const invitesInitial = loadJSON(invitesKey, []);
+  document.getElementById('inviteesInput').value = invitesInitial.join('\n');
+
+  // Initial render
+  syncInviteeFromUrl();
+  setLinks();
+  renderOrg();
+  renderInviteeStatus();
+
+  // Invitee actions
+  const nameInput = document.getElementById('nameInput');
+
+  document.getElementById('btnYes').onclick = () => {
+    const name = normaliseName(nameInput.value);
+    if(!name) return alert('Please enter your name');
+
+    const ik = currentInviteKey();
+    if(!ik) return alert('Please enter your name');
+
+    // If they came via general link, auto-add them to invite list for demo.
+    ensureInInviteList(name);
+
+    upsertResponse(ik, name, 'yes');
+    document.getElementById('status').textContent = 'Saved: coming.';
+    renderOrg();
+  };
+
+  document.getElementById('btnNo').onclick = () => {
+    const name = normaliseName(nameInput.value);
+    if(!name) return alert('Please enter your name');
+
+    const ik = currentInviteKey();
+    if(!ik) return alert('Please enter your name');
+
+    ensureInInviteList(name);
+
+    upsertResponse(ik, name, 'no');
+    document.getElementById('status').textContent = 'Saved: not coming.';
+    renderOrg();
+  };
+
+  // Organiser actions
+  document.getElementById('saveInvitees').onclick = () => {
+    const raw = document.getElementById('inviteesInput').value;
+    const names = parseInvitees(raw);
+    saveJSON(invitesKey, names);
+
+    document.getElementById('savedMsg').textContent = names.length ? `Saved ${names.length} invitee(s).` : 'Saved.';
+    setTimeout(() => document.getElementById('savedMsg').textContent = '', 1800);
+
+    if(bc) bc.postMessage({ type:'changed', eventSlug, weekKey });
+    setLinks();
+    renderOrg();
+    syncInviteeFromUrl();
+  };
+
+  document.getElementById('resetAll').onclick = () => {
+    if(!confirm('Reset invitees + responses for this event/week (local demo)?')) return;
+    localStorage.removeItem(invitesKey);
+    localStorage.removeItem(responsesKey);
+    document.getElementById('inviteesInput').value = '';
+    syncInviteeFromUrl();
+    setLinks();
+    renderOrg();
+    document.getElementById('status').textContent = '';
+    toast('Reset done (local).');
+    if(bc) bc.postMessage({ type:'changed', eventSlug, weekKey });
+  };
+
+  // Copy link actions
+  document.getElementById('copyGeneral').onclick = async () => {
+    await copyText(document.getElementById('generalLink').textContent);
+  };
+  document.getElementById('copyNamed').onclick = async () => {
+    await copyText(document.getElementById('namedLink').textContent);
+  };
+
+  async function copyText(text){
+    try{ await navigator.clipboard.writeText(text); toast('Copied.'); }
+    catch{ prompt('Copy this link:', text); }
+  }
+
+  // Nav
+  const iv = document.getElementById('inviteeView');
+  const ov = document.getElementById('orgView');
+  document.getElementById('navInvitee').onclick = (e) => {
+    e.preventDefault();
+    iv.classList.add('active');
+    ov.classList.remove('active');
+    syncInviteeFromUrl();
+    renderInviteeStatus();
+  };
+  document.getElementById('navOrg').onclick = (e) => {
+    e.preventDefault();
+    ov.classList.add('active');
+    iv.classList.remove('active');
+    renderOrg();
+  };
+
+  // Live sync across tabs
+  function refreshAll(){
+    document.getElementById('inviteesInput').value = loadJSON(invitesKey, []).join('\n');
+    setLinks();
+    renderOrg();
+    syncInviteeFromUrl();
+    renderInviteeStatus();
+  }
+
+  if(bc){
+    bc.onmessage = (ev) => {
+      const msg = ev.data || {};
+      if(msg.type === 'changed' && msg.eventSlug === eventSlug && msg.weekKey === weekKey){
+        refreshAll();
+      }
+    };
+  }
+
+  window.addEventListener('storage', (ev) => {
+    if(ev.key === invitesKey || ev.key === responsesKey) refreshAll();
+  });
+
+  window.addEventListener('popstate', () => {
+    syncInviteeFromUrl();
+    renderInviteeStatus();
+  });
+</script>
+</body>
+</html>
